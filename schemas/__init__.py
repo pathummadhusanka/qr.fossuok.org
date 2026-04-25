@@ -1,5 +1,5 @@
-from .user import CreateUser, VerifyUser
 from .auth import GitHubUser, SessionUser
+from .user import CreateUser, VerifyUser
 
 __all__ = [
     "CreateUser",

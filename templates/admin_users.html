@@ -5,6 +5,61 @@
 {% block head %}
 <!-- SweetAlert2 -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<style>
+.btn-info-affiliation {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1.5px solid #e0e7ff;
+    border-radius: 8px;
+    background: #f5f3ff;
+    color: #6366f1;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    padding: 0;
+}
+.btn-info-affiliation:hover {
+    background: #6366f1;
+    color: #fff;
+    border-color: #6366f1;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99,102,241,0.25);
+}
+.affil-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+    border: 1px solid #c7d2fe;
+    color: #4338ca;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+}
+.affil-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    margin-bottom: 0.85rem;
+}
+.affil-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9ca3af;
+}
+.affil-value {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #111827;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -69,6 +124,20 @@
                         </td>
                         <td class="text-end users-action-cell">
                             <div class="d-flex justify-content-end gap-2">
+                                {% if u.participant_type %}
+                                <button type="button" class="btn-info-affiliation"
+                                        data-name="{{ u.name }}"
+                                        data-type="{{ u.participant_type }}"
+                                        data-student-id="{{ u.student_id or '' }}"
+                                        data-university="{{ u.university or '' }}"
+                                        data-study-year="{{ u.study_year or '' }}"
+                                        data-organization="{{ u.organization or '' }}"
+                                        data-job-role="{{ u.job_role or '' }}"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#affiliationModal">
+                                    <i class="bi bi-person-badge"></i>
+                                </button>
+                                {% endif %}
                                 {% if u.role != 'admin' %}
                                 <button type="button" class="btn-promote"
                                         data-action="promote"
@@ -110,6 +179,25 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Affiliation Detail Modal -->
+<div class="modal fade" id="affiliationModal" tabindex="-1" aria-labelledby="affiliationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content border-0 shadow-lg rounded-4 p-1">
+            <div class="modal-header border-0 pb-0">
+                <div>
+                    <h5 class="modal-title fw-bold mb-0" id="affiliationModalLabel">Participant Details</h5>
+                    <p class="text-muted small mb-0" id="affil-username"></p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-3" id="affiliationModalBody">
+                <!-- populated by JS -->
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
 
 {% block scripts %}

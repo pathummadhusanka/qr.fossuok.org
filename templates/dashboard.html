@@ -11,7 +11,14 @@
                 <i class="bi bi-calendar-check me-1"></i> Active Event
             </span>
         </div>
-        <p class="text-muted">Real-time statistics for <strong>Open Dev Summit '26</strong></p>
+        <p class="text-muted">
+            Real-time statistics
+            {% if active_event %}
+                for <strong>{{ active_event.title }}</strong>
+            {% else %}
+                &mdash; no active event
+            {% endif %}
+        </p>
     </div>
 
     <!-- Stats Cards -->
@@ -20,7 +27,7 @@
             <div class="text-muted small fw-bold text-uppercase mb-2">Registered</div>
             <div class="h2 fw-bold mb-0 stat-value">{{ stats.total_registered }}</div>
             <div class="text-primary small mt-2">
-                <i class="bi bi-people-fill"></i> Total users
+                <i class="bi bi-people-fill"></i> Total participants
             </div>
         </div>
     </div>
