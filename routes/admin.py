@@ -9,7 +9,7 @@ from starlette.datastructures import FormData
 from routes.auth import get_current_user
 from services.admin import fetch_user_stat, generate_pdf, get_all_users, get_all_participants, \
     get_participants_for_event, change_user_role, delete_user_from_db
-from services.event import get_active_event
+
 from services.event import get_all_events, add_event, toggle_event_status, delete_event_data, update_event_data
 
 router: APIRouter = APIRouter(
@@ -26,11 +26,14 @@ async def admin_dashboard(
         user=Depends(get_current_user)
 ):
     """Admin dashboard — shows event stats."""
+    from services.event import get_active_event
     total_registered, total_attended = await fetch_user_stat()
+    active_event = await get_active_event()
 
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "user": user,
+        "active_event": active_event,
         "stats": {
             "total_registered": total_registered,
             "total_attended": total_attended,
@@ -49,24 +52,36 @@ async def admin_verify(
 
 
 @router.get("/export-attendance")
-async def export_attendance(
-        user=Depends(get_current_user)
-):
-    """Admin page — lists all registered users with their roles."""
+async def export_attendance(user=Depends(get_current_user)):
+    """Full attendance PDF — all participants across all events."""
     if user.role != "admin":
         raise HTTPException(status_code=403, detail="Admin access required")
 
-    # get the users from supabase
-    users = await get_all_participants()
-
-    # Output as stream
-    pdf_output = generate_pdf(users)
-
+    participants = await get_all_participants()
+    pdf_output = generate_pdf(participants, event_title="All Events", per_event=False)
+    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
     return StreamingResponse(
         io.BytesIO(pdf_output),
         media_type="application/pdf",
-        headers={
-            "Content-Disposition": f"attachment; filename=attendance_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"}
+        headers={"Content-Disposition": f"attachment; filename=attendance_all_{ts}.pdf"}
+    )
+
+
+@router.get("/export-attendance/{event_id}")
+async def export_attendance_event(event_id: str, user=Depends(get_current_user)):
+    """Per-event attendance PDF."""
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+
+    participants, event = await get_participants_for_event(event_id)
+    event_title = event.get("title", "Event") if event else "Event"
+    pdf_output = generate_pdf(participants, event_title=event_title, per_event=True)
+    ts = datetime.now().strftime('%Y%m%d_%H%M%S')
+    safe_title = event_title.replace(" ", "_")[:30]
+    return StreamingResponse(
+        io.BytesIO(pdf_output),
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=attendance_{safe_title}_{ts}.pdf"}
     )
 
 
