@@ -1,7 +1,7 @@
 import os
 from typing import Final
 
-from fastapi import APIRouter, HTTPException, Cookie, Request
+from fastapi import APIRouter, HTTPException, Cookie, Request, BackgroundTasks
 from starlette.responses import RedirectResponse
 
 from schemas import SessionUser
@@ -37,9 +37,8 @@ async def github_login():
     """Redirect to Supabase Auth."""
     return RedirectResponse(url=build_github_redirect_url())
 
-
 @router.get("/callback")
-async def github_callback(request: Request):
+async def github_callback(request: Request, background_tasks: BackgroundTasks):
     """
     Handle the callback from Supabase (PKCE flow).
     All business logic lives in services.auth.handle_github_callback.
@@ -54,7 +53,7 @@ async def github_callback(request: Request):
 
     http_client = request.app.state.http_client
     session_token, redirect_url = await handle_github_callback(
-        code, http_client
+        code, http_client, background_tasks
     )
 
     if not session_token:
