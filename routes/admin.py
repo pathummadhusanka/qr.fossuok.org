@@ -7,8 +7,9 @@ from fastapi.templating import Jinja2Templates
 from starlette.datastructures import FormData
 
 from routes.auth import get_current_user
-from services.admin import fetch_user_stat, generate_pdf, get_all_users, get_all_participants, change_user_role, \
-    delete_user_from_db
+from services.admin import fetch_user_stat, generate_pdf, get_all_users, get_all_participants, \
+    get_participants_for_event, change_user_role, delete_user_from_db
+from services.event import get_active_event
 from services.event import get_all_events, add_event, toggle_event_status, delete_event_data, update_event_data
 
 router: APIRouter = APIRouter(

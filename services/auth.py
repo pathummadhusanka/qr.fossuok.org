@@ -49,9 +49,8 @@ async def handle_supabase_callback(code: str):
 
 
 async def handle_github_callback(
-    code: str,
-    http_client,
-    background_tasks: BackgroundTasks,
+        code: str,
+        http_client,
 ) -> tuple[str, str]:
     """
     Full OAuth callback pipeline — exchanges code, registers user,

@@ -182,3 +182,44 @@ def generate_qr_data_url(text: str) -> str:
     buf.seek(0)
     b64 = base64.b64encode(buf.read()).decode("ascii")
     return f"data:image/png;base64,{b64}"
+
+
+async def get_user_profile(qr_code_data: str) -> dict | None:
+    """
+    Fetches lightweight profile fields for the given user.
+    Used to check if a new user has already completed their affiliation form.
+    """
+    try:
+        res = await (
+            supabase_admin.table("users")
+            .select("qr_code_data, participant_type, email, name, avatar_url")
+            .eq("qr_code_data", qr_code_data)
+            .limit(1)
+            .execute()
+        )
+        return res.data[0] if res.data else None
+    except Exception:
+        return None
+
+
+async def complete_user_profile(qr_code_data: str, profile_data: dict) -> None:
+    """
+    Persists affiliation fields for a user who just completed the profile form.
+    For UoK students, university is always set to 'University of Kelaniya'.
+    """
+    ptype = profile_data["participant_type"]
+    update = {
+        "participant_type": ptype,
+        "student_id": profile_data.get("student_id"),
+        "university": "University of Kelaniya" if ptype == "uok_student" else profile_data.get("university"),
+        "study_year": profile_data.get("study_year"),
+        "organization": profile_data.get("organization"),
+        "job_role": profile_data.get("job_role"),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await (
+        supabase_admin.table("users")
+        .update(update)
+        .eq("qr_code_data", qr_code_data)
+        .execute()
+    )
