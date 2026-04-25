@@ -8,8 +8,10 @@ from fastapi.templating import Jinja2Templates
 
 # Patch sync auth client for timing
 from config.supabase import supabase as sync_supabase
+from config.supabase import supabase_admin
 from middleware.perf_logger import PerfMiddleware, patch_supabase_admin, patch_sync_auth
 from routes import users, auth, admin, api
+from services.event import get_active_event
 
 
 @asynccontextmanager
@@ -24,19 +26,16 @@ async def lifespan(app: FastAPI):
     - A shared httpx.AsyncClient is created for outgoing HTTP (e.g. email).
     - The active-event cache is pre-warmed.
     """
-    from config.supabase import supabase_admin
-
-    # 1. Start persistent async Supabase DB client
+    # Start persistent async Supabase DB client
     await supabase_admin.init()
     patch_supabase_admin(supabase_admin)  # instrument DB calls -> logs/perf.log
 
-    # 2. Shared HTTP client for email sends
+    # Shared HTTP client for email sends
     async with httpx.AsyncClient(timeout=15.0) as http_client:
         app.state.http_client = http_client
 
-        # 3. Pre-warm the event cache (best-effort)
+        # Pre-warm the event cache (best-effort)
         try:
-            from services.event import get_active_event
             await get_active_event()
         except Exception:
             pass
