@@ -1,0 +1,107 @@
+{% extends "layout.html" %}
+{% block title %}My Events – FOSSUoK{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+    <!-- Header -->
+    <div class="col-12 ue-header">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ user.avatar_url or 'https://github.com/identicons/default.png' }}"
+                 class="rounded-circle" width="48" height="48" alt="{{ user.name }}">
+            <div>
+                <h2>My Events</h2>
+                <p>Welcome back, {{ user.name }}. Manage your event registrations below.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Available to register ───────────────────────────────── -->
+    {% if available_events %}
+    <div class="col-12">
+        <div class="section-label"><i class="bi bi-lightning-charge-fill me-1"></i>Open for Registration</div>
+        <div class="row g-3">
+            {% for e in available_events %}
+            <div class="col-12 col-md-6">
+                <div class="ec available">
+                    <span class="ec-badge open"><i class="bi bi-calendar-check"></i> Open Now</span>
+                    <div class="ec-title">{{ e.title }}</div>
+                    <div class="ec-meta">
+                        {% if e.location %}<span><i class="bi bi-geo-alt"></i> {{ e.location }}</span>{% endif %}
+                        {% if e.start_time %}<span><i class="bi bi-clock"></i> {{ e.start_time[:16].replace('T',' ') }}</span>{% endif %}
+                    </div>
+                    {% if e.description %}
+                    <p style="font-size:.85rem;color:#6b7280;margin-bottom:1rem;">{{ e.description }}</p>
+                    {% endif %}
+                    <form method="post" action="/user/events/{{ e.id }}/register"
+                          onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Registering…';">
+                        <button type="submit" class="btn-register">
+                            <i class="bi bi-plus-circle"></i> Register &amp; Get QR
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ── My registrations ─────────────────────────────────────── -->
+    <div class="col-12">
+        <div class="section-label"><i class="bi bi-ticket-perforated me-1"></i>My Registrations</div>
+
+        {% if registrations %}
+        <div class="row g-3">
+            {% for reg in registrations %}
+            <div class="col-12 col-md-6">
+                <div class="ec">
+                    {% if reg.attended_at %}
+                        <span class="ec-badge attended"><i class="bi bi-check-circle-fill"></i> Attended</span>
+                    {% else %}
+                        <span class="ec-badge registered"><i class="bi bi-ticket-perforated-fill"></i> Registered</span>
+                    {% endif %}
+
+                    <div class="ec-title">{{ reg.event.title if reg.event else '—' }}</div>
+                    <div class="ec-meta">
+                        {% if reg.event.location %}<span><i class="bi bi-geo-alt"></i> {{ reg.event.location }}</span>{% endif %}
+                        {% if reg.event.start_time %}<span><i class="bi bi-clock"></i> {{ reg.event.start_time[:16].replace('T',' ') }}</span>{% endif %}
+                        <span><i class="bi bi-calendar3"></i> Registered {{ reg.registered_at[:10] if reg.registered_at else '—' }}</span>
+                    </div>
+                    {% if reg.attended_at %}
+                    <div style="font-size:.8rem;color:#065f46;margin-bottom:.9rem;">
+                        <i class="bi bi-check2-all me-1"></i> Attended at {{ reg.attended_at[:16].replace('T',' ') }} UTC
+                    </div>
+                    {% endif %}
+
+                    <a href="/user/registrations/{{ reg.id }}/qr" class="btn-qr" download>
+                        <i class="bi bi-qr-code-scan"></i> Download QR
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+        <div class="empty-card">
+            <i class="bi bi-calendar-x"></i>
+            <p class="fw-semibold mb-1">No registrations yet</p>
+            <p class="small mb-0">
+                {% if available_events %}
+                    Click <strong>Register &amp; Get QR</strong> above to get your entry pass.
+                {% else %}
+                    There are no open events right now. Check back later!
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/static/js/user_events.js"></script>
+{% endblock %}
