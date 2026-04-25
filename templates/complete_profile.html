@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+{% block title %}Complete Your Profile – FOSS Community UOK{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+<div class="cp-wrapper">
+    <div class="cp-card">
+
+        <div class="cp-header-icon">
+            <i class="bi bi-person-badge-fill"></i>
+        </div>
+        <h1 class="cp-title">One last step!</h1>
+        <p class="cp-subtitle">
+            Help us understand who's attending — it takes under 30 seconds.
+        </p>
+
+        {% if error %}
+        <div class="cp-error">
+            <i class="bi bi-exclamation-circle-fill"></i>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST" action="/user/complete-profile" id="profileForm">
+
+            <!-- Category selector -->
+            <div class="category-grid">
+                <label class="category-card">
+                    <input type="radio" name="participant_type" value="uok_student" id="type_uok"
+                        {% if form and form.participant_type == 'uok_student' %}checked{% endif %}>
+                    <span class="category-label">
+                        <span class="cat-icon">🎓</span>
+                        <span class="cat-title">UoK Student</span>
+                    </span>
+                </label>
+
+                <label class="category-card">
+                    <input type="radio" name="participant_type" value="other_university" id="type_other_uni"
+                        {% if form and form.participant_type == 'other_university' %}checked{% endif %}>
+                    <span class="category-label">
+                        <span class="cat-icon">🏫</span>
+                        <span class="cat-title">Other University</span>
+                    </span>
+                </label>
+
+                <label class="category-card">
+                    <input type="radio" name="participant_type" value="industry" id="type_industry"
+                        {% if form and form.participant_type == 'industry' %}checked{% endif %}>
+                    <span class="category-label">
+                        <span class="cat-icon">💼</span>
+                        <span class="cat-title">Industry / Other</span>
+                    </span>
+                </label>
+            </div>
+
+            <hr class="cp-divider">
+
+            <!-- Default placeholder -->
+            <div id="panel_placeholder" class="cp-placeholder field-panel active">
+                <i class="bi bi-arrow-up-circle me-1"></i>Select a category above to continue
+            </div>
+
+            <!-- Panel: UoK Student -->
+            <div id="panel_uok" class="field-panel {% if form and form.participant_type == 'uok_student' %}active{% endif %}">
+                <div class="field-group">
+                    <label class="cp-label" for="student_id">
+                        <i class="bi bi-card-text me-1 text-indigo-500"></i>Student ID
+                    </label>
+                    <input
+                        type="text"
+                        id="student_id"
+                        name="student_id"
+                        class="cp-input"
+                        placeholder="e.g. CS/2020/045"
+                        value="{{ form.student_id if form else '' }}"
+                        autocomplete="off">
+                    <p class="hint-text">Your University of Kelaniya student registration number.</p>
+                </div>
+            </div>
+
+            <!-- Panel: Other University -->
+            <div id="panel_other_uni" class="field-panel {% if form and form.participant_type == 'other_university' %}active{% endif %}">
+                <div class="field-group">
+                    <label class="cp-label" for="university">
+                        <i class="bi bi-building me-1"></i>University Name
+                    </label>
+                    <input
+                        type="text"
+                        id="university"
+                        name="university"
+                        class="cp-input"
+                        placeholder="e.g. University of Colombo"
+                        value="{{ form.university if form else '' }}"
+                        autocomplete="organization">
+                </div>
+                <div class="field-group">
+                    <label class="cp-label" for="study_year">
+                        <i class="bi bi-calendar3 me-1"></i>Year of Study
+                    </label>
+                    <div class="select-wrap">
+                        <select id="study_year" name="study_year" class="cp-select">
+                            <option value="" disabled {% if not form or not form.study_year %}selected{% endif %}>Select year…</option>
+                            {% for yr in study_years %}
+                            <option value="{{ yr }}" {% if form and form.study_year == yr %}selected{% endif %}>{{ yr }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Industry / Other -->
+            <div id="panel_industry" class="field-panel {% if form and form.participant_type == 'industry' %}active{% endif %}">
+                <div class="field-group">
+                    <label class="cp-label" for="organization">
+                        <i class="bi bi-briefcase me-1"></i>Organization / Company
+                    </label>
+                    <input
+                        type="text"
+                        id="organization"
+                        name="organization"
+                        class="cp-input"
+                        placeholder="e.g. WSO2, Dialog Axiata"
+                        value="{{ form.organization if form else '' }}"
+                        autocomplete="organization">
+                </div>
+                <div class="field-group">
+                    <label class="cp-label" for="job_role">
+                        <i class="bi bi-person-workspace me-1"></i>Job Role / Title
+                    </label>
+                    <input
+                        type="text"
+                        id="job_role"
+                        name="job_role"
+                        class="cp-input"
+                        placeholder="e.g. Software Engineer, DevRel"
+                        value="{{ form.job_role if form else '' }}"
+                        autocomplete="organization-title">
+                </div>
+            </div>
+
+            <button type="submit" class="cp-submit" id="submitBtn" disabled>
+                <i class="bi bi-check-circle me-1"></i>Save & Get My QR Code
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/complete_profile.js"></script>
+{% endblock %}
