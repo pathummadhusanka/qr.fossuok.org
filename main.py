@@ -7,9 +7,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from api.v1 import users, auth, admin, api
-from config.supabase import supabase as sync_supabase
+# from config.supabase import supabase as sync_supabase
 from config.supabase import supabase_admin
-from middleware.perf_logger import PerfMiddleware, patch_supabase_admin, patch_sync_auth
+# from middleware.perf_logger import PerfMiddleware, patch_supabase_admin, patch_sync_auth
 from services.event import get_active_event
 
 
@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     """
     # Start persistent async Supabase DB client
     await supabase_admin.init()
-    patch_supabase_admin(supabase_admin)  # instrument DB calls -> logs/perf.log
+    # patch_supabase_admin(supabase_admin)  # instrument DB calls -> logs/perf.log
 
     # Shared HTTP client for email sends
     async with httpx.AsyncClient(timeout=15.0) as http_client:
@@ -45,12 +45,12 @@ async def lifespan(app: FastAPI):
     await supabase_admin.aclose()
 
 
-patch_sync_auth(sync_supabase)
+# patch_sync_auth(sync_supabase)
 
 app: FastAPI = FastAPI(lifespan=lifespan)
 
 # logs every request -> logs/perf.log
-app.add_middleware(PerfMiddleware)
+# app.add_middleware(PerfMiddleware)
 
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
