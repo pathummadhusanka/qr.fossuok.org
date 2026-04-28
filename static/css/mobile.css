@@ -104,8 +104,14 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .field-group {
@@ -178,15 +184,18 @@
     .category-grid {
         grid-template-columns: 1fr;
     }
+
     .cp-card {
         padding: 1.5rem 1rem;
     }
+
     .category-label {
         flex-direction: row;
         justify-content: center;
         gap: 1rem;
         padding: 1rem;
     }
+
     .cat-icon {
         margin-bottom: 0;
     }
@@ -225,7 +234,7 @@
     background: #ffffff;
     border-radius: 12px;
     padding: 1.5rem;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     border: 1px solid #e9ecef;
     height: 100%;
     display: flex;
@@ -300,20 +309,34 @@
     color: white;
 }
 
-.btn-register:hover { background-color: #0b5ed7; }
-.btn-register:disabled { background-color: #8bb9fe; cursor: not-allowed; }
+.btn-register:hover {
+    background-color: #0b5ed7;
+}
+
+.btn-register:disabled {
+    background-color: #8bb9fe;
+    cursor: not-allowed;
+}
 
 .btn-qr {
     background-color: #4b2e83;
     color: white;
 }
-.btn-qr:hover { background-color: #3b2266; color: white; }
+
+.btn-qr:hover {
+    background-color: #3b2266;
+    color: white;
+}
 
 .btn-whatsapp {
     background-color: #25D366;
     color: white;
 }
-.btn-whatsapp:hover { background-color: #128C7E; color: white; }
+
+.btn-whatsapp:hover {
+    background-color: #128C7E;
+    color: white;
+}
 
 .empty-card {
     text-align: center;
@@ -335,9 +358,11 @@
     .ec {
         padding: 1.25rem;
     }
+
     .d-flex.gap-2 {
         flex-direction: column;
     }
+
     .btn-register, .btn-qr, .btn-whatsapp {
         width: 100%;
         min-height: 48px;

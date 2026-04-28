@@ -3,16 +3,17 @@ from typing import Optional
 from cachetools import TTLCache
 from starlette.datastructures import FormData
 
-from schema.event import Event
 from repository.event_repo import (
     get_active_event_dict, get_event_by_id as get_event_by_id_repo,
     get_all_events as get_all_events_repo, create_event, update_event,
     delete_event, deactivate_all_active_events_except
 )
 from repository.user_repo import nullify_registered_event_id
+from schema.event import Event
 
 _active_event_cache = TTLCache(maxsize=1, ttl=300)  # 5 minutes
 _all_events_cache = TTLCache(maxsize=1, ttl=60)  # 1 minute
+
 
 # Import inside function to avoid circular import if needed
 def invalidate_event_cache() -> None:

@@ -1,5 +1,7 @@
 from typing import Optional
+
 from config.supabase import supabase_admin
+
 
 async def get_user_registrations(user_qr_code: str) -> list[dict]:
     try:
@@ -14,6 +16,7 @@ async def get_user_registrations(user_qr_code: str) -> list[dict]:
     except Exception:
         return []
 
+
 async def create_registration(reg_data: dict) -> dict:
     res = await (
         supabase_admin.table("registrations")
@@ -22,16 +25,18 @@ async def create_registration(reg_data: dict) -> dict:
     )
     return res.data[0]
 
+
 async def get_registration_by_id(reg_id: str, select: str = "*", user_qr_code: Optional[str] = None) -> Optional[dict]:
     try:
         query = supabase_admin.table("registrations").select(select).eq("id", reg_id)
         if user_qr_code:
             query = query.eq("user_qr_code", user_qr_code)
-            
+
         res = await query.single().execute()
         return res.data
     except Exception:
         return None
+
 
 async def update_registration(reg_id: str, update_data: dict) -> None:
     await (
@@ -40,6 +45,7 @@ async def update_registration(reg_id: str, update_data: dict) -> None:
         .eq("id", reg_id)
         .execute()
     )
+
 
 async def get_all_registrations(select: str = "user_qr_code, attended_at") -> list[dict]:
     try:
@@ -52,7 +58,9 @@ async def get_all_registrations(select: str = "user_qr_code, attended_at") -> li
     except Exception:
         return []
 
-async def get_registrations_for_event(event_id: str, select: str = "user_qr_code, registered_at, attended_at") -> list[dict]:
+
+async def get_registrations_for_event(event_id: str, select: str = "user_qr_code, registered_at, attended_at") -> list[
+    dict]:
     try:
         res = await (
             supabase_admin.table("registrations")
@@ -65,6 +73,7 @@ async def get_registrations_for_event(event_id: str, select: str = "user_qr_code
     except Exception:
         return []
 
+
 async def delete_registrations_for_user(user_qr_code: str) -> None:
     await (
         supabase_admin.table("registrations")
@@ -72,6 +81,7 @@ async def delete_registrations_for_user(user_qr_code: str) -> None:
         .eq("user_qr_code", user_qr_code)
         .execute()
     )
+
 
 async def get_attended_count() -> int:
     try:

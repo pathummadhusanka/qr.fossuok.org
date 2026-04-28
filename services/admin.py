@@ -5,16 +5,16 @@ from datetime import datetime, timezone
 from cachetools import TTLCache
 from fpdf import FPDF
 
+from repository.event_repo import get_event_by_id
+from repository.registration_repo import (
+    get_attended_count, get_all_registrations, get_registrations_for_event,
+    delete_registrations_for_user
+)
 from repository.user_repo import (
     get_registered_participant_count, get_all_participants as get_all_participants_repo,
     get_users_by_qr_codes, get_paginated_users as get_paginated_users_repo,
     update_user_by_github_id, delete_user_by_github_id, get_user_by_github_id
 )
-from repository.registration_repo import (
-    get_attended_count, get_all_registrations, get_registrations_for_event,
-    delete_registrations_for_user
-)
-from repository.event_repo import get_event_by_id
 
 _stat_cache = TTLCache(maxsize=1, ttl=60)  # 1 minute
 _paginated_users_cache = TTLCache(maxsize=50, ttl=30)  # 30 seconds only
@@ -79,7 +79,8 @@ async def get_participants_for_event(event_id: str):
 
     user_qr_codes = [r["user_qr_code"] for r in registrations]
     try:
-        users_res = await get_users_by_qr_codes(user_qr_codes, select="qr_code_data, name, email, role, participant_type, student_id, university, organization, job_role")
+        users_res = await get_users_by_qr_codes(user_qr_codes,
+                                                select="qr_code_data, name, email, role, participant_type, student_id, university, organization, job_role")
         users_by_qr = {u["qr_code_data"]: u for u in users_res}
     except Exception:
         users_by_qr = {}
@@ -143,7 +144,7 @@ def generate_pdf(participants, event_title: str = "All Events", per_event: bool 
     pdf = FPDF()
     pdf.add_page()
 
-    # ── Header ──────────────────────────────────────────────────────────────
+    # Header
     pdf.set_font("Arial", "B", 20)
     pdf.set_text_color(75, 46, 131)
     pdf.cell(0, 15, "Attendance Report", ln=True, align="C")
@@ -160,7 +161,7 @@ def generate_pdf(participants, event_title: str = "All Events", per_event: bool 
     h = 8
 
     if per_event:
-        # ── Per-event: Name | Email | Affiliation | Status ──────────────────
+        # Per-event: Name | Email | Affiliation | Status
         cols = [("Name", 50), ("Email", 60), ("Affiliation", 50), ("Status", 30)]
         pdf.set_font("Arial", "B", 11)
         pdf.set_fill_color(75, 46, 131)
@@ -202,7 +203,7 @@ def generate_pdf(participants, event_title: str = "All Events", per_event: bool 
             fill = not fill
 
     else:
-        # ── Full report: Name | Email | Registered | Attended ────────────────
+        # Full report: Name | Email | Registered | Attended
         cols = [("Name", 55), ("Email", 70), ("Registered", 35), ("Attended", 30)]
         pdf.set_font("Arial", "B", 11)
         pdf.set_fill_color(75, 46, 131)

@@ -1,9 +1,10 @@
-from typing import Literal, Optional
 from datetime import datetime, timezone
+from typing import Literal, Optional
+
 from pydantic import BaseModel, EmailStr, model_validator, Field
 
 
-# ── Database Models ────────────────────────────────────────────────────────
+# Database Models
 class User(BaseModel):
     id: Optional[int] = None
     name: str
@@ -14,18 +15,18 @@ class User(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
-    participant_type: Optional[str] = None   # 'uok_student' | 'other_university' | 'industry'
-    student_id: Optional[str] = None         # UoK student ID
-    university: Optional[str] = None         # Other university name
-    study_year: Optional[str] = None         # e.g. "Year 2"
-    organization: Optional[str] = None       # Industry org name
-    job_role: Optional[str] = None           # Industry designation
+    participant_type: Optional[str] = None  # 'uok_student' | 'other_university' | 'industry'
+    student_id: Optional[str] = None  # UoK student ID
+    university: Optional[str] = None  # Other university name
+    study_year: Optional[str] = None  # e.g. "Year 2"
+    organization: Optional[str] = None  # Industry org name
+    job_role: Optional[str] = None  # Industry designation
 
     class Config:
         from_attributes = True
 
 
-# ── Request Schemas ────────────────────────────────────────────────────────
+# Request Schemas
 class CreateUser(BaseModel):
     name: str
     email: EmailStr
