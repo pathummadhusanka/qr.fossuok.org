@@ -35,12 +35,19 @@
                     {% if e.description %}
                     <p style="font-size:.85rem;color:#6b7280;margin-bottom:1rem;">{{ e.description }}</p>
                     {% endif %}
-                    <form method="post" action="/user/events/{{ e.id }}/register"
-                          onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Registering…';">
-                        <button type="submit" class="btn-register">
-                            <i class="bi bi-plus-circle"></i> Register &amp; Get QR
-                        </button>
-                    </form>
+                    <div class="d-flex gap-2">
+                        <form method="post" action="/user/events/{{ e.id }}/register" class="flex-grow-1"
+                              onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='<span class=\'spinner-border spinner-border-sm me-2\'></span>Registering…';">
+                            <button type="submit" class="btn-register w-100">
+                                <i class="bi bi-plus-circle"></i> Register &amp; Get QR
+                            </button>
+                        </form>
+                        {% if e.whatsapp_link %}
+                        <a href="{{ e.whatsapp_link }}" target="_blank" class="btn-whatsapp flex-grow-1">
+                            <i class="bi bi-whatsapp"></i> Join WhatsApp
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}
@@ -75,9 +82,16 @@
                     </div>
                     {% endif %}
 
-                    <a href="/user/registrations/{{ reg.id }}/qr" class="btn-qr" download>
-                        <i class="bi bi-qr-code-scan"></i> Download QR
-                    </a>
+                    <div class="d-flex gap-2">
+                        <a href="/user/registrations/{{ reg.id }}/qr" class="btn-qr flex-grow-1 text-center" download>
+                            <i class="bi bi-qr-code-scan"></i> Download QR
+                        </a>
+                        {% if reg.event.whatsapp_link %}
+                        <a href="{{ reg.event.whatsapp_link }}" target="_blank" class="btn-whatsapp flex-grow-1">
+                            <i class="bi bi-whatsapp"></i> Join WhatsApp
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endfor %}

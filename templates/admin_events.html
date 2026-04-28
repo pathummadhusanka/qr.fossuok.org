@@ -80,6 +80,7 @@
                                 data-event-start="{{ e.start_time[:16] if e.start_time else '' }}"
                                 data-event-end="{{ e.end_time[:16] if e.end_time else '' }}"
                                 data-event-image="{{ e.image_url or '' }}"
+                                data-event-whatsapp="{{ e.whatsapp_link or '' }}"
                                 data-event-active="{{ 'true' if e.is_active else 'false' }}">
                             <i class="bi bi-pencil me-1"></i>Edit
                         </button>
@@ -103,6 +104,15 @@
             </div>
             {% endfor %}
         </div>
+        
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+            <span class="text-muted small" id="paginationInfo">Showing 0 to 0 of 0 events</span>
+            <div class="d-flex gap-1" id="paginationControls">
+                <!-- populated by JS -->
+            </div>
+        </div>
+        
         {% else %}
         <div class="card">
             <div class="empty-state">
@@ -123,6 +133,7 @@
     <input type="hidden" name="start_time" id="formStartTime">
     <input type="hidden" name="end_time" id="formEndTime">
     <input type="hidden" name="image_url" id="formImageUrl">
+    <input type="hidden" name="whatsapp_link" id="formWhatsappLink">
     <input type="hidden" name="is_active" id="formIsActive">
 </form>
 
@@ -134,6 +145,7 @@
     <input type="hidden" name="start_time" id="editStartTime">
     <input type="hidden" name="end_time" id="editEndTime">
     <input type="hidden" name="image_url" id="editImageUrl">
+    <input type="hidden" name="whatsapp_link" id="editWhatsappLink">
     <input type="hidden" name="is_active" id="editIsActive">
 </form>
 {% endblock %}
