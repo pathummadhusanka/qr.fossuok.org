@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException
+
 from services.registration import verify_registration
 
 router: APIRouter = APIRouter(

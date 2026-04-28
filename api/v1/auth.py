@@ -37,6 +37,7 @@ async def github_login():
     """Redirect to Supabase Auth."""
     return RedirectResponse(url=build_github_redirect_url())
 
+
 @router.get("/callback")
 async def github_callback(request: Request, background_tasks: BackgroundTasks):
     """

@@ -10,11 +10,11 @@ import qrcode
 from fastapi import HTTPException
 from fastapi.responses import StreamingResponse
 
+from repository.event_repo import get_active_event_dict
 from repository.user_repo import (
     get_user_by_github_id, update_user_by_github_id, create_user,
     get_user_by_qr_code, update_user_by_qr_code
 )
-from repository.event_repo import get_active_event_dict
 
 _profile_cache: dict[str, tuple[dict | None, float]] = {}
 _PROFILE_TTL: int = 300  # 5 minutes
@@ -168,7 +168,8 @@ async def get_user_profile(qr_code_data: str) -> dict | None:
         return cached[0]
 
     try:
-        profile = await get_user_by_qr_code(qr_code_data, select="qr_code_data, participant_type, email, name, avatar_url")
+        profile = await get_user_by_qr_code(qr_code_data,
+                                            select="qr_code_data, participant_type, email, name, avatar_url")
     except Exception:
         return _profile_cache.get(qr_code_data, (None,))[0]
 

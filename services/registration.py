@@ -50,8 +50,8 @@ async def register_for_event(
 
     try:
         registration = await create_registration({
-            "id": reg_id, 
-            "user_qr_code": user_qr_code, 
+            "id": reg_id,
+            "user_qr_code": user_qr_code,
             "event_id": event_id
         })
     except Exception as e:
@@ -77,7 +77,8 @@ async def register_for_event(
 
 async def get_registration_qr_payload(registration_id: str, user_qr_code: str) -> str | None:
     try:
-        reg = await get_registration_by_id(registration_id, select="id, user_qr_code, event_id", user_qr_code=user_qr_code)
+        reg = await get_registration_by_id(registration_id, select="id, user_qr_code, event_id",
+                                           user_qr_code=user_qr_code)
         if not reg:
             return None
 
@@ -115,7 +116,7 @@ async def verify_registration(qr_raw: str) -> dict:
 
         user_task = get_user_by_qr_code(reg["user_qr_code"], select="name, email, avatar_url")
         event_task = get_event_by_id(reg["event_id"], select="id, title")
-        
+
         user_dict, event_dict = await asyncio.gather(user_task, event_task)
 
         already_marked = bool(reg.get("attended_at"))
